@@ -34,7 +34,9 @@ namespace ILR_TestSuite.New_Business.Sales_App
             public void RunTest()
             {
                 Delay(15);
-                using (OleDbConnection conn = new OleDbConnection(_test_data_connString))
+                          
+                
+            using (OleDbConnection conn = new OleDbConnection(_test_data_connString))
                 {
                     try
                     {
@@ -62,9 +64,19 @@ namespace ILR_TestSuite.New_Business.Sales_App
                         {
                             var Scenario_ID = ((System.Data.DataRowView)row).Row.ItemArray[0].ToString();
                             var results = PositiveTestProcess(Scenario_ID);
-                            writeResultsToExcell(results, "Scenarios",Scenario_ID);
 
-                        }
+                            OleDbCommand updatecmd = conn.CreateCommand();
+
+                            //Test_Date
+                            var testDate = DateTime.Now.ToString();
+                            updatecmd.CommandText = $"UPDATE [{sheet}$] SET Test_Results  = '{results.Item1}' WHERE Scenario_ID = '{Scenario_ID}';";
+                            updatecmd.ExecuteNonQuery();
+                            updatecmd.CommandText = $"UPDATE [{sheet}$] SET Comment  = '{results.Item2}' WHERE Scenario_ID = '{Scenario_ID}';";
+                            updatecmd.ExecuteNonQuery();
+                            updatecmd.CommandText = $"UPDATE [{sheet}$] SET Test_Date = '{testDate}' WHERE Scenario_ID = '{Scenario_ID}';";
+                            updatecmd.ExecuteNonQuery();
+
+                    }
                     }
                     finally
                     {
